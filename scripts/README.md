@@ -2,7 +2,7 @@
 ./scripts/init
 
 # to publish if there's changes
-tox || ./scripts/bump-and-publish
+tox || ./scripts/publish
 
 # manually
 PYTHONPATH=$PYTHONPATH:./ ./scripts/bump-version.py

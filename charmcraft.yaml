@@ -1,0 +1,6 @@
+name: deferral-queue-editor  # $ TEMPLATE: Filled in by ./scripts/init.sh
+type: charm
+description: |  
+  Library charm for: editor.py
+summary: |
+  Library charm for: editor.py

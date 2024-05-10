@@ -14,8 +14,8 @@ root = Path()
 
 
 def inline_lib():
-    print("Rendering $LIB_NAME lib...")
-    py = root / "$LIB_NAME.py"
+    print("Rendering editor.py lib...")
+    py = root / "editor.py"
     template = root / "lib_template.jinja"
 
     assert py.exists()
@@ -25,9 +25,9 @@ def inline_lib():
         root
         / "lib"
         / "charms"
-        / "$LIB_NAME"  # $ TEMPLATE: Filled in by ./scripts/init.sh
+        / "deferral-queue-editor"  # $ TEMPLATE: Filled in by ./scripts/init.sh
         / f"v{__version__.version}"
-        / "$LIB_NAME.py"  # $ TEMPLATE: Filled in by ./scripts/init.sh
+        / "editor.py"  # $ TEMPLATE: Filled in by ./scripts/init.sh
     )
 
     if not lib_file.parent.exists():
