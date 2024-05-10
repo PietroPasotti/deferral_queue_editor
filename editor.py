@@ -1,28 +1,29 @@
 import dataclasses
 import re
 from contextlib import contextmanager
-from pathlib import Path
-from typing import Dict, List, Callable
+from typing import Callable, Dict, List, Optional
 
 import ops
-from ops import CharmBase
 from ops.framework import _event_regex
-from ops.storage import SQLiteStorage, NoSnapshotError
+from ops.storage import NoSnapshotError, SQLiteStorage
 
 EVENT_REGEX = re.compile(_event_regex)
 
 
 @dataclasses.dataclass(frozen=True)
 class DeferredEvent:
+    """Deferred event data structure."""
+
     handle_path: str
     owner: str
     observer: str
 
     # needs to be marshal.dumps-able.
-    snapshot_data: Dict = dataclasses.field(default_factory=dict)
+    snapshot_data: Optional[Dict[str, str]] = dataclasses.field(default_factory=dict)
 
     @property
     def name(self):
+        """Event name."""
         return self.handle_path.split("/")[-1].split("[")[0]
 
 
@@ -32,7 +33,6 @@ class _UnitStateDB:
 
     def read(self) -> List["DeferredEvent"]:
         """Load the list of deferred events from the db."""
-
         db = self._db
 
         deferred = []
@@ -73,11 +73,14 @@ class _UnitStateDB:
             db.save_snapshot(obj.handle_path, obj.snapshot_data)
 
 
-def deferred(event_name: str,
-             handler: Callable,
-             event_id: int = 1,
-             snapshot_data: Dict[str, str] = None) -> DeferredEvent:
-    """Helper to create a deferred event data structure from an event name and its designated handler.
+def deferred(
+    event_name: str,
+    handler: Callable,
+    event_id: int = 1,
+    snapshot_data: Optional[Dict[str, str]] = None,
+) -> DeferredEvent:
+    """Create a deferred event data structure from an event name and its designated handler.
+
     Note that different event types will require you to pass specific snapshot_data pairs.
     Refer to the ops docs for the full specification.
     """
@@ -102,6 +105,10 @@ def deferred(event_name: str,
 
 @contextmanager
 def edit_deferral_queue(charm: ops.CharmBase):
+    """Context manager to edit the deferral queue.
+
+    Manipulate the yielded list at will.
+    """
     db = _UnitStateDB(charm.framework._storage)
     queue = db.read()
     yield queue
@@ -109,5 +116,6 @@ def edit_deferral_queue(charm: ops.CharmBase):
 
 
 def get_deferral_queue(charm: ops.CharmBase):
+    """Read the deferral queue and give it to you."""
     db = _UnitStateDB(charm.framework._storage)
     return db.read()
