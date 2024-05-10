@@ -25,7 +25,7 @@ def inline_lib():
         root
         / "lib"
         / "charms"
-        / "deferral-queue-editor"  # $ TEMPLATE: Filled in by ./scripts/init.sh
+        / "deferral_queue_editor"  # $ TEMPLATE: Filled in by ./scripts/init.sh
         / f"v{__version__.version}"
         / "editor.py"  # $ TEMPLATE: Filled in by ./scripts/init.sh
     )
